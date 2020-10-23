@@ -20,13 +20,13 @@ namespace SERTECFARMASL_PGOF_connector_IOFSfera
         private EndPoint localEndPoint;
         private string localAddress;
         private string locaPort;
-        private Printer printer;
+        private string authPharmacy;
 
-        public ClientConnection(string host, int port)
+        public ClientConnection(string host, int port, string auth)
         {
             HOST = host;
             PORT = port;
-            printer = new Printer();
+            authPharmacy = auth;
         }
 
         public void Connect()
@@ -53,7 +53,8 @@ namespace SERTECFARMASL_PGOF_connector_IOFSfera
                     locaPort = localAddressPort[1];
 
                     Console.WriteLine($"CONNECTED : REMOTE END POINT : IP={remoteAddress}  PORT={remotePort} |  LOCA END POINT : IP={localAddress}  PORT={locaPort} ");
-                    Listener(true);
+                    this.Emit(authPharmacy);
+                    this.Listener(true);
                 }
             }
             catch (ArgumentNullException e)
@@ -77,7 +78,7 @@ namespace SERTECFARMASL_PGOF_connector_IOFSfera
             }
             try
             {
-                Listener(false);
+                //Listener(false);
                 this.client.Close();
                 Console.WriteLine($"CLOSED : REMOTE END POINT : IP={remoteAddress}  PORT={remotePort} |  LOCA END POINT : IP={localAddress}  PORT={locaPort} ");
             }
@@ -109,7 +110,6 @@ namespace SERTECFARMASL_PGOF_connector_IOFSfera
                     if (readBytes != 0)
                     {
                         Console.WriteLine($"RECEIVE: {Encoding.ASCII.GetString(receiveBytes, 0, readBytes)}");
-                        printer.Print(Encoding.ASCII.GetString(receiveBytes, 0, readBytes));
                     }
 
                 }
@@ -128,6 +128,8 @@ namespace SERTECFARMASL_PGOF_connector_IOFSfera
                 Console.WriteLine($"CONNECTION IS NOT OPEN OR ALREADY CLOSE - IMPOSSIBLE TO EMIT DATA");
                 return;
             }
+            Console.WriteLine($"DATA : {data} ");
+
 
             // SEND
             byte[] sendBytes = ASCIIEncoding.ASCII.GetBytes(data);
@@ -137,6 +139,16 @@ namespace SERTECFARMASL_PGOF_connector_IOFSfera
             byte[] receiveBytes = new byte[client.ReceiveBufferSize];
             int readBytes = stream.Read(receiveBytes, 0, receiveBytes.Length);
             Console.WriteLine($"RECEIVE: {Encoding.ASCII.GetString(receiveBytes, 0, readBytes)}");
+
+        }
+
+        public void EmitJSON(string data)
+        {
+            if (client == null)
+            {
+                Console.WriteLine($"CONNECTION IS NOT OPEN OR ALREADY CLOSE - IMPOSSIBLE TO EMIT DATA");
+                return;
+            }
 
         }
     }

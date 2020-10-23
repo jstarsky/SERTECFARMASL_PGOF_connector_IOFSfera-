@@ -18,11 +18,15 @@ namespace SERTECFARMASL_PGOF_connector_IOFSfera
         public Form_()
         {
             this.InitializeComponent();
-            client = new ClientConnection("207.154.200.103", 9090);
+            AuthPharmacy _authPharmacy = new AuthPharmacy();
+            _authPharmacy.token = "token1";
+            string _auth = Newtonsoft.Json.JsonConvert.SerializeObject(_authPharmacy);
+
+            client = new ClientConnection("127.0.0.1", 7070, _auth);
         }
 
         #region
-        private void onClickConnect(object sender, EventArgs e)
+        private async void onClickConnect(object sender, EventArgs e)
         {
             client.Connect();
         }
@@ -33,5 +37,9 @@ namespace SERTECFARMASL_PGOF_connector_IOFSfera
         }
         #endregion
 
+        public class AuthPharmacy
+        {
+            public string token { get; set; }
+        }
     }
 }
